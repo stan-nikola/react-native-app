@@ -1,8 +1,6 @@
 import {
   View,
-  StyleSheet,
   TextInput,
-  Button,
   Text,
   TouchableOpacity,
   Platform,
@@ -14,7 +12,9 @@ import {
 
 import { useState, useEffect } from "react";
 
-import AddAvatarIcon from "../assets/svg/addUserAvatar.svg";
+import AddAvatarIcon from "../../assets/svg/addUserAvatar.svg";
+
+import registrationScreenStyles from "./registrationScreenStyles";
 
 const initialState = {
   login: "",
@@ -29,7 +29,7 @@ const RegistrationScreen = () => {
 
   const [dimensionX, setDimensionX] = useState(Dimensions.get("window").width);
 
-  const [toggleShowPassword, setToggleShowPassword] = useState(false);
+  const [toggleIsShowPassword, setToggleIsShowPassword] = useState(false);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -72,20 +72,20 @@ const RegistrationScreen = () => {
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "maxHeight"}
         style={{
-          ...styles.container,
+          ...registrationScreenStyles.container,
           maxHeight: keyboardVisible ? "82%" : "68%",
         }}
       >
-        <View style={styles.avatar}>
-          <TouchableOpacity style={styles.addAvatarButton}>
-            <AddAvatarIcon style={styles.addAvatarIcon} />
+        <View style={registrationScreenStyles.avatar}>
+          <TouchableOpacity style={registrationScreenStyles.addAvatarButton}>
+            <AddAvatarIcon style={registrationScreenStyles.addAvatarIcon} />
           </TouchableOpacity>
         </View>
-        <Text style={styles.title}>Sign In</Text>
+        <Text style={registrationScreenStyles.title}>Sign In</Text>
 
         <View style={{ width: dimensionX - 16 * 2 }}>
           <TextInput
-            style={styles.input}
+            style={registrationScreenStyles.input}
             onChangeText={(value) =>
               setCredentials((prevCredentials) => ({
                 ...prevCredentials,
@@ -96,7 +96,7 @@ const RegistrationScreen = () => {
             placeholder="Login"
           />
           <TextInput
-            style={styles.input}
+            style={registrationScreenStyles.input}
             onChangeText={(value) =>
               setCredentials((prevCredentials) => ({
                 ...prevCredentials,
@@ -108,8 +108,8 @@ const RegistrationScreen = () => {
           />
           <View style={{ position: "relative" }}>
             <TextInput
-              style={{ ...styles.input, marginBottom: 43 }}
-              secureTextEntry={!toggleShowPassword}
+              style={{ ...registrationScreenStyles.input, marginBottom: 43 }}
+              secureTextEntry={!toggleIsShowPassword}
               onChangeText={(value) =>
                 setCredentials((prevCredentials) => ({
                   ...prevCredentials,
@@ -120,11 +120,11 @@ const RegistrationScreen = () => {
               placeholder="Password"
             ></TextInput>
             <TouchableOpacity
-              onPress={() => setToggleShowPassword(!toggleShowPassword)}
-              style={styles.showPasswordBtn}
+              onPress={() => setToggleIsShowPassword(!toggleIsShowPassword)}
+              style={registrationScreenStyles.showPasswordBtn}
             >
-              <Text style={styles.showPasswordBtnText}>
-                {toggleShowPassword ? "Hide" : "Show"}
+              <Text style={registrationScreenStyles.showPasswordBtnText}>
+                {toggleIsShowPassword ? "Hide" : "Show"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -132,98 +132,21 @@ const RegistrationScreen = () => {
 
         <TouchableOpacity
           onPress={handleSubmit}
-          style={{ ...styles.signInButton, width: dimensionX - 16 * 2 }}
+          style={{
+            ...registrationScreenStyles.signInButton,
+            width: dimensionX - 16 * 2,
+          }}
         >
-          <Text style={styles.signInText}>Sign In</Text>
+          <Text style={registrationScreenStyles.signInText}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={styles.logInText}>Already have an account? log In</Text>
+          <Text style={registrationScreenStyles.logInText}>
+            Already have an account? log In
+          </Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: "100%",
-    maxHeight: "67%",
-    backgroundColor: "#FFFFFF",
-    alignItems: "center",
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-  },
-
-  avatar: {
-    position: "absolute",
-    width: 120,
-    height: 120,
-    top: -60,
-    margin: "auto",
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-    zIndex: 10,
-  },
-  addAvatarButton: { position: "relative" },
-  addAvatarIcon: {
-    width: 25,
-    height: 25,
-    position: "absolute",
-    top: 76,
-    right: -11,
-  },
-  title: {
-    marginTop: "23%",
-    marginBottom: 33,
-    fontWeight: 500,
-    fontSize: 30,
-    lineHeight: 35,
-    textAlign: "center",
-    letterSpacing: 0.01,
-    fontFamily: "Roboto-Medium",
-  },
-  input: {
-    height: 50,
-    marginBottom: 16,
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    paddingVertical: 16,
-    borderRadius: 8,
-    backgroundColor: "#F6F6F6",
-    borderWidth: 1,
-    borderColor: "#E8E8E8",
-    fontFamily: "Roboto-Regular",
-  },
-  showPasswordBtn: { position: "absolute", top: 16, right: 15 },
-
-  showPasswordBtnText: { color: "#1B4371", fontSize: 16, lineHeight: 19 },
-  signInButton: {
-    minHeight: 50,
-    paddingHorizontal: "auto",
-    paddingVertical: 16,
-    backgroundColor: "#FF6C00",
-    borderRadius: 100,
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  signInText: {
-    fontSize: 16,
-    lineHeight: 19,
-    textAlign: "center",
-    color: "#FFFFFF",
-    fontFamily: "Roboto-Regular",
-  },
-  logInText: {
-    flex: 1,
-    alignItems: "baseline",
-    fontWeight: 400,
-    fontSize: 16,
-    lineHeight: 19,
-    textAlign: "center",
-    color: "#1B4371",
-    marginTop: "3%",
-  },
-});
 
 export default RegistrationScreen;

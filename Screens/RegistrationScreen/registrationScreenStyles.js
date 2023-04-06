@@ -1,0 +1,85 @@
+import { StyleSheet } from "react-native";
+
+const registrationScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: "100%",
+    maxHeight: "67%",
+    backgroundColor: "#FFFFFF",
+    alignItems: "center",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+
+  avatar: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+    top: -60,
+    margin: "auto",
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+    zIndex: 10,
+  },
+  addAvatarButton: { position: "relative" },
+  addAvatarIcon: {
+    width: 25,
+    height: 25,
+    position: "absolute",
+    top: 76,
+    right: -11,
+  },
+  title: {
+    marginTop: "23%",
+    marginBottom: 33,
+    fontWeight: 500,
+    fontSize: 30,
+    lineHeight: 35,
+    textAlign: "center",
+    letterSpacing: 0.01,
+    fontFamily: "Roboto-Medium",
+  },
+  input: {
+    height: 50,
+    marginBottom: 16,
+    borderWidth: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 16,
+    borderRadius: 8,
+    backgroundColor: "#F6F6F6",
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    fontFamily: "Roboto-Regular",
+  },
+  showPasswordBtn: { position: "absolute", top: 16, right: 15 },
+
+  showPasswordBtnText: { color: "#1B4371", fontSize: 16, lineHeight: 19 },
+  signInButton: {
+    minHeight: 50,
+    paddingHorizontal: "auto",
+    paddingVertical: 16,
+    backgroundColor: "#FF6C00",
+    borderRadius: 100,
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  signInText: {
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    color: "#FFFFFF",
+    fontFamily: "Roboto-Regular",
+  },
+  logInText: {
+    flex: 1,
+    alignItems: "baseline",
+    fontWeight: 400,
+    fontSize: 16,
+    lineHeight: 19,
+    textAlign: "center",
+    color: "#1B4371",
+    marginTop: "3%",
+  },
+});
+
+export default registrationScreenStyles;

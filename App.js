@@ -5,8 +5,9 @@ import { useCallback } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
-import RegistrationScreen from "./Screens/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen";
+import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
+import LoginScreen from "./Screens/LoginScreen/LoginScreen";
+
 
 SplashScreen.preventAutoHideAsync();
 

@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "connect": "adb reverse tcp:8081 tcp:8081 && adb reverse tcp:8097 tcp:8097"
   },
   "dependencies": {
     "expo": "~48.0.9",
@@ -14,11 +15,12 @@
     "expo-splash-screen": "^0.18.1",
     "expo-status-bar": "~1.4.4",
     "react": "18.2.0",
-    "react-native": "0.71.4",
+    "react-devtools": "^4.27.4",
+    "react-native": "0.71.6",
+    "react-native-debugger": "^1.1.0",
     "react-native-svg": "^13.4.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
     "react-native-svg-transformer": "^1.0.0"
   },
   "private": true
