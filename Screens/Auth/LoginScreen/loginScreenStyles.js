@@ -1,6 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 
-const registrationScreenStyles = StyleSheet.create({
+const loginScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
@@ -10,28 +10,15 @@ const registrationScreenStyles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
+  imageBg: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
+  },
 
-  avatar: {
-    position: "absolute",
-    width: 120,
-    height: 120,
-    top: -60,
-    margin: "auto",
-    backgroundColor: "#F6F6F6",
-    borderRadius: 16,
-    zIndex: 10,
-  },
-  addAvatarButton: { position: "relative" },
-  addAvatarIcon: {
-    width: 25,
-    height: 25,
-    position: "absolute",
-    top: 76,
-    right: -11,
-  },
   title: {
-    marginTop: "23%",
-    marginBottom: 33,
+    marginVertical: "9%",
     fontWeight: 500,
     fontSize: 30,
     lineHeight: 35,
@@ -41,7 +28,7 @@ const registrationScreenStyles = StyleSheet.create({
   },
   input: {
     height: 50,
-    marginBottom: 16,
+    marginBottom: 33,
     borderWidth: 1,
     paddingHorizontal: 10,
     paddingVertical: 16,
@@ -82,4 +69,4 @@ const registrationScreenStyles = StyleSheet.create({
   },
 });
 
-export default registrationScreenStyles;
+export default loginScreenStyles;

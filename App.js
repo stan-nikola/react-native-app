@@ -1,17 +1,21 @@
-import { StyleSheet, View, ImageBackground, Dimensions } from "react-native";
+import { StyleSheet, View, Dimensions } from "react-native";
 
-import { useCallback } from "react";
-
+import { useCallback, useState } from "react";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 
-import RegistrationScreen from "./Screens/RegistrationScreen/RegistrationScreen";
-import LoginScreen from "./Screens/LoginScreen/LoginScreen";
+import {
+  NavigationContainer,
+  createNavigationContainerRef,
+} from "@react-navigation/native";
 
+import { AuthRoute, MainRoute, useRoute } from "./router";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  const [routeName, setRouteName] = useState();
+
   const [fontsLoaded] = useFonts({
     "Roboto-Regular": require("./assets/fonts/Roboto-Regular.ttf"),
     "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
@@ -27,30 +31,33 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
+  const ref = createNavigationContainerRef();
+  // const routing = useRoute(true);
 
   return (
-    <View style={styles.container} onLayout={onLayoutRootView}>
-      <ImageBackground
-        source={require("./assets/img/PhotoBG.jpg")}
-        style={styles.imageBg}
+    <View onLayout={onLayoutRootView} style={styles.container}>
+      <NavigationContainer
+        ref={ref}
+        onReady={() => {
+          setRouteName(ref.getCurrentRoute().name);
+        }}
+        onStateChange={async () => {
+          const currentRouteName = ref.getCurrentRoute().name;
+          setRouteName(currentRouteName);
+        }}
+        onLayout={onLayoutRootView}
+        style={styles.container}
       >
-        <RegistrationScreen />
-        {/* <LoginScreen /> */}
-      </ImageBackground>
+        {/* <AuthRoute /> */}
+        <MainRoute routeName={routeName} />
+      </NavigationContainer>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-  },
-  imageBg: {
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
-    resizeMode: "cover",
-    justifyContent: "flex-end",
   },
 });
