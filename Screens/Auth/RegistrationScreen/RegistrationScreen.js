@@ -52,17 +52,6 @@ const RegistrationScreen = ({ navigation }) => {
     };
   }, []);
 
-  // useEffect(() => {
-  //   const onChange = () => {
-  //     const width = Dimensions.get("window").width;
-  //     setDimensionX(width);
-  //   };
-  //   Dimensions.addEventListener("change", onChange);
-  //   return () => {
-  //     Dimensions.removeEventListener("change", onChange);
-  //   };
-  // }, []);
-
   const handleSubmit = () => {
     console.log(credentials);
     setCredentials(initialState);

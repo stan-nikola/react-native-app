@@ -1,69 +1,60 @@
-import { StyleSheet } from "react-native";
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 
 import GoBackIcon from "../../../assets/svg/arrow-left.svg";
+import mapScreenStyles from "./MapScreenStyles";
+import { useEffect, useState } from "react";
 
-export const MapScreen = ({ navigation }) => {
+export const MapScreen = ({ navigation, route }) => {
+  const [coordinate, setCoordinate] = useState({
+    latitude: 0,
+    longitude: 0,
+    latitudeDelta: 0.006,
+    longitudeDelta: 0.006,
+  });
+
+  const [locationTitle, setLocationTitle] = useState("");
+  const [mapIsShown, setMapIsShown] = useState(false);
+
+  const params = route.params;
+  useEffect(() => {
+    if (params.location) {
+      setCoordinate({
+        ...coordinate,
+        latitude: params.location.coords.latitude,
+        longitude: params.location.coords.longitude,
+      });
+      setLocationTitle(params.photoName);
+      setMapIsShown(true);
+    }
+  }, [params]);
+
   return (
-    <View style={createPostScreenStyles.container}>
-      <View style={createPostScreenStyles.header}>
+    <View style={mapScreenStyles.container}>
+      <View style={mapScreenStyles.header}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Posts")}
-          style={createPostScreenStyles.goBackBtn}
+          style={mapScreenStyles.goBackBtn}
         >
           <GoBackIcon></GoBackIcon>
         </TouchableOpacity>
-        <Text style={createPostScreenStyles.headerText}>Map</Text>
+        <Text style={mapScreenStyles.headerText}>Map</Text>
       </View>
-      <View style={createPostScreenStyles.commentContainer}>
-        <View style={createPostScreenStyles.commentPhoto}></View>
+      <View style={mapScreenStyles.mapContainer}>
+        {mapIsShown && (
+          <MapView initialRegion={coordinate} style={mapScreenStyles.map}>
+            <Marker
+              title={locationTitle}
+              coordinate={{
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
+              }}
+            />
+          </MapView>
+        )}
       </View>
     </View>
   );
 };
-
-const createPostScreenStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
-  header: {
-    flex: 1,
-    width: "100%",
-    marginTop: 40,
-    maxHeight: 50,
-    borderBottomWidth: 1,
-    borderBottomColor: "#BDBDBD",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerText: {
-    fontWeight: 500,
-    fontSize: 17,
-    fontFamily: "Roboto-Regular",
-    lineHeight: 22,
-  },
-  goBackBtn: {
-    position: "absolute",
-    left: 16,
-    height: 24,
-    width: 24,
-  },
-
-  commentContainer: {
-    paddingHorizontal: 16,
-    marginTop: 32,
-    width: "100%",
-  },
-  commentPhoto: {
-    width: "100%",
-    height: 250,
-    backgroundColor: "#F6F6F6",
-    borderRadius: 8,
-    borderColor: "#E8E8E8",
-    borderWidth: 1,
-  },
-});
 
 export default MapScreen;

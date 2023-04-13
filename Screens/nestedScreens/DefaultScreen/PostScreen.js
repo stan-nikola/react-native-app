@@ -4,8 +4,18 @@ import { Text, View, Image, TouchableOpacity } from "react-native";
 import LogOutIcon from "../../../assets/svg/log-out.svg";
 import MessageIcon from "../../../assets/svg/message";
 import MapLocation from "../../../assets/svg/map-pin.svg";
+import { useEffect, useState } from "react";
+import { FlatList } from "react-native";
 
-export const PostScreen = ({ navigation }) => {
+export const PostScreen = ({ navigation, route }) => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    if (route.params) {
+      setPosts((prevState) => [...prevState, route.params]);
+    }
+  }, [route.params]);
+
   return (
     <View style={postScreenStyles.container}>
       <View style={postScreenStyles.header}>
@@ -34,50 +44,57 @@ export const PostScreen = ({ navigation }) => {
           <Text style={{ fontSize: 11, lineHeight: 13 }}>email@mail.com</Text>
         </View>
       </View>
-      <View style={{ paddingHorizontal: 16 }}>
-        <Image
-          source={require("../../../assets/temp/view1.jpg")}
-          style={postScreenStyles.image}
-        ></Image>
-        <Text style={postScreenStyles.imageName}>Forest</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Comments")}
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <MessageIcon style={{ marginRight: 8 }}></MessageIcon>
-            <Text style={postScreenStyles.imageLocation}>0</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Map")}
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "flex-end",
-            }}
-          >
-            <MapLocation style={{ marginRight: 8 }}></MapLocation>
-            <Text
+
+      <FlatList
+        data={posts}
+        keyExtractor={(item, idx) => idx.toString()}
+        renderItem={({ item }) => (
+          <View style={{ paddingHorizontal: 16, marginBottom: 34 }}>
+            <Image
+              source={{ uri: item.photo }}
+              style={postScreenStyles.image}
+            ></Image>
+            <Text style={postScreenStyles.imageName}>{item.photoName}</Text>
+            <View
               style={{
-                ...postScreenStyles.imageLocation,
-                textDecorationLine: "underline",
-                color: "#212121",
+                flexDirection: "row",
+                justifyContent: "space-between",
               }}
             >
-              Ivano-Frankivs'k Region, Ukraine
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Comments", item.photo)}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <MessageIcon style={{ marginRight: 8 }}></MessageIcon>
+                <Text style={postScreenStyles.imageLocation}>0</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Map", item)}
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "flex-end",
+                }}
+              >
+                <MapLocation style={{ marginRight: 8 }}></MapLocation>
+                <Text
+                  style={{
+                    ...postScreenStyles.imageLocation,
+                    textDecorationLine: "underline",
+                    color: "#212121",
+                  }}
+                >
+                  {item.locationName}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      />
     </View>
   );
 };
@@ -88,9 +105,8 @@ const postScreenStyles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   header: {
-    flex: 1,
     marginTop: 40,
-    maxHeight: 50,
+    height: 50,
     borderBottomWidth: 1,
     borderBottomColor: "#BDBDBD",
     alignItems: "center",

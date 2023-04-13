@@ -7,7 +7,7 @@ import CommentSend from "../../../assets/svg/commentSend.svg";
 import { Image } from "react-native";
 import commentsScreenStyles from "./CommentsScreenStyles";
 
-export const CommentsScreen = ({ navigation }) => {
+export const CommentsScreen = ({ navigation, route }) => {
   return (
     <View style={commentsScreenStyles.container}>
       <View style={commentsScreenStyles.header}>
@@ -22,7 +22,7 @@ export const CommentsScreen = ({ navigation }) => {
       <View style={commentsScreenStyles.commentContainer}>
         <Image
           style={commentsScreenStyles.postImage}
-          source={require("../../../assets/temp/view2.jpg")}
+          source={{ uri: route.params }}
         />
 
         <View style={commentsScreenStyles.userComment}>

@@ -34,8 +34,6 @@ export const AuthRoute = () => {
 };
 
 export const MainRoute = ({ routeName }) => {
-  console.log(routeName);
-
   return (
     <>
       <MainTab.Navigator
@@ -107,91 +105,6 @@ export const MainRoute = ({ routeName }) => {
     </>
   );
 };
-
-// export const useRoute = ( ) => {
-
-//   if (!isAuth) {
-//     return (
-//       <AuthStack.Navigator>
-//         <AuthStack.Screen
-//           options={{ headerShown: false }}
-//           name="SignIn"
-//           component={RegistrationScreen}
-//         />
-//         <AuthStack.Screen
-//           options={{ headerShown: false }}
-//           name="LogIn"
-//           component={LoginScreen}
-//         />
-//       </AuthStack.Navigator>
-//     );
-//   }
-
-//   return (
-//     <>
-//       <MainTab.Navigator
-//         // initialRouteName="PostScreen"
-//         screenOptions={{
-//           tabBarShowLabel: false,
-//           tabBarStyle: routerScreenStyles.tabBarStyles,
-//         }}
-//       >
-//         <MainTab.Screen
-//           name="Home"
-//           options={{
-//             headerShown: false,
-//             tabBarIcon: ({ focused, size, color }) => (
-//               <View
-//                 style={{
-//                   ...routerScreenStyles.tabs,
-//                   backgroundColor: focused ? "#FF6C00" : "#fff",
-//                 }}
-//               >
-//                 <Grid name="home" size={40} />
-//               </View>
-//             ),
-//           }}
-//           component={HomeScreen}
-//         />
-//         <MainTab.Screen
-//           name="CreatePostScreen"
-//           options={{
-//             headerShown: false,
-//             tabBarStyle: { display: "none" },
-//             tabBarIcon: ({ focused, size, color }) => (
-//               <View
-//                 style={{
-//                   ...routerScreenStyles.tabs,
-//                   backgroundColor: focused ? "#FF6C00" : "#fff",
-//                 }}
-//               >
-//                 <New style={{ stroke: "#212121B3" }} />
-//               </View>
-//             ),
-//           }}
-//           component={CreatePostScreen}
-//         />
-//         <MainTab.Screen
-//           name="ProfileScreen"
-//           options={{
-//             headerShown: false,
-//             tabBarIcon: ({ focused, size, color }) => (
-//               <View
-//                 style={{
-//                   ...routerScreenStyles.tabs,
-//                   backgroundColor: focused ? "#FF6C00" : "#fff",
-//                 }}
-//               >
-//                 <User name="user" size={40} />
-//               </View>
-//             ),
-//           }}
-//           component={ProfileScreen}
-//         />
-//       </MainTab.Navigator>
-//     </>
-//   );
-// };
 
 const routerScreenStyles = StyleSheet.create({
   tabBarStyles: {
