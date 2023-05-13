@@ -1,6 +1,13 @@
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
 import { Camera } from "expo-camera";
 import * as Location from "expo-location";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 
 import GoBackIcon from "../../../assets/svg/arrow-left.svg";
 import MakePhoto from "../../../assets/svg/makePhoto.svg";
@@ -9,6 +16,8 @@ import DeleteIcon from "../../../assets/svg/trash.svg";
 import createPostScreenStyles from "./CreatePostsScreenStyles";
 import { useEffect, useState } from "react";
 import { Image } from "react-native";
+import { dbStorage } from "../../../firebase/config";
+import { uid } from "uid";
 
 export const CreatePostScreen = ({ navigation }) => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -18,22 +27,28 @@ export const CreatePostScreen = ({ navigation }) => {
   const [photo, setPhoto] = useState(null);
   const [photoName, setPhotoName] = useState("");
   const [locationName, setLocationName] = useState("");
+  const [processedPhoto, setProcessedPhoto] = useState(null);
+  const [photoId, setPhotoId] = useState(uid());
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        console.log("Permission to access location was denied");
-        return;
-      }
-    })();
-    (async () => {
-      if (permission.status !== "granted") {
-        console.log("Permission to access camera was denied");
-        return;
-      }
-    })();
-  }, []);
+  const storage = getStorage();
+  const storageRef = ref(storage, `postImages/${photoId}`);
+
+  // useEffect(() => {
+  //   (async () => {
+  //     const { status } = await Location.requestForegroundPermissionsAsync();
+
+  //     if (status !== "granted") {
+  //       console.log("Permission to access location was denied");
+  //       return;
+  //     }
+  //   })();
+  //   (async () => {
+  //     if (permission.status !== "granted") {
+  //       console.log("Permission to access camera was denied");
+  //       return;
+  //     }
+  //   })();
+  // }, []);
 
   const takePhoto = async () => {
     let location = await Location.getCurrentPositionAsync({});
@@ -57,6 +72,25 @@ export const CreatePostScreen = ({ navigation }) => {
     setLocation(null);
     setLocationName("");
     setPhotoName("");
+    setProcessedPhoto(null);
+  };
+
+  const uploadPhotoToServer = async () => {
+    const response = await fetch(photo);
+    const file = await response.blob();
+
+    await uploadBytes(storageRef, file);
+    const result = await getDownloadURL(ref(storage, storageRef));
+
+    setProcessedPhoto(result);
+  };
+
+  const changePhoto = async () => {
+    setProcessedPhoto(null);
+    setCameraShown(!cameraShown);
+
+    await deleteObject(storageRef);
+    setPhotoId(uid());
   };
 
   return (
@@ -88,39 +122,69 @@ export const CreatePostScreen = ({ navigation }) => {
         {!cameraShown && (
           <View style={createPostScreenStyles.createContainer}>
             <View style={createPostScreenStyles.addPhoto}>
-              <Image
-                style={{
-                  width: "100%",
-                  height: "100%",
-                }}
-                source={{ uri: photo }}
-              />
-              <TouchableOpacity
-                style={{
-                  ...createPostScreenStyles.openCameraButton,
-                  backgroundColor: photo === null ? "#ffffff" : "#ffffff4d",
-                }}
-                onPress={() => setCameraShown(!cameraShown)}
-              >
-                <MakePhoto
-                  style={{ color: photo === null ? "#BDBDBD" : "#fff" }}
-                ></MakePhoto>
-              </TouchableOpacity>
+              {!processedPhoto ? (
+                <Image
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0.6,
+                  }}
+                  source={{ uri: photo }}
+                />
+              ) : (
+                <Image
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                  source={{ uri: processedPhoto }}
+                />
+              )}
+
+              {!processedPhoto && (
+                <TouchableOpacity
+                  style={{
+                    ...createPostScreenStyles.openCameraButton,
+                    backgroundColor: photo === null ? "#ffffff" : "#ffffff4d",
+                  }}
+                  onPress={() => setCameraShown(!cameraShown)}
+                >
+                  <MakePhoto
+                    style={{ color: photo === null ? "#BDBDBD" : "#fff" }}
+                  ></MakePhoto>
+                </TouchableOpacity>
+              )}
             </View>
 
-            <TouchableOpacity>
-              <Text
-                style={{
-                  fontFamily: "Roboto-Regular",
-                  fontSize: 16,
-                  lineHeight: 19,
-                  color: "#BDBDBD",
-                  marginTop: 8,
-                }}
-              >
-                Upload photo
-              </Text>
-            </TouchableOpacity>
+            {!processedPhoto ? (
+              <TouchableOpacity onPress={uploadPhotoToServer}>
+                <Text
+                  style={{
+                    fontFamily: "Roboto-Regular",
+                    fontSize: 16,
+                    lineHeight: 19,
+                    color: "#BDBDBD",
+                    marginTop: 8,
+                  }}
+                >
+                  Upload photo
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={changePhoto}>
+                <Text
+                  style={{
+                    fontFamily: "Roboto-Regular",
+                    fontSize: 16,
+                    lineHeight: 19,
+                    color: "#BDBDBD",
+                    marginTop: 8,
+                  }}
+                >
+                  Change photo
+                </Text>
+              </TouchableOpacity>
+            )}
             <View>
               <TextInput
                 placeholder="Photo name..."

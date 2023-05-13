@@ -6,9 +6,12 @@ import MessageIcon from "../../../assets/svg/message";
 import MapLocation from "../../../assets/svg/map-pin.svg";
 import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
+import { useDispatch } from "react-redux";
+import { authSignOutUser } from "../../../redux/auth/authOperations";
 
 export const PostScreen = ({ navigation, route }) => {
   const [posts, setPosts] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (route.params) {
@@ -20,7 +23,10 @@ export const PostScreen = ({ navigation, route }) => {
     <View style={postScreenStyles.container}>
       <View style={postScreenStyles.header}>
         <Text style={postScreenStyles.headerText}>Publications</Text>
-        <TouchableOpacity style={postScreenStyles.logOutBtn}>
+        <TouchableOpacity
+          onPress={() => dispatch(authSignOutUser())}
+          style={postScreenStyles.logOutBtn}
+        >
           <LogOutIcon></LogOutIcon>
         </TouchableOpacity>
       </View>

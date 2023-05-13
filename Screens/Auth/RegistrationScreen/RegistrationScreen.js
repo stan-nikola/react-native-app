@@ -13,24 +13,27 @@ import {
 
 import { useState, useEffect } from "react";
 
+import { useDispatch } from "react-redux";
+
 import AddAvatarIcon from "../../../assets/svg/addUserAvatar.svg";
 
 import registrationScreenStyles from "./registrationScreenStyles";
 
-const initialState = {
-  login: "",
+import { authSignUpUser } from "../../../redux/auth/authOperations";
+
+const initialCredentials = {
+  userName: "",
   email: "",
   password: "",
 };
 
 const RegistrationScreen = ({ navigation }) => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  const [credentials, setCredentials] = useState(initialState);
-
+  const [credentials, setCredentials] = useState(initialCredentials);
   const [dimensionX, setDimensionX] = useState(Dimensions.get("window").width);
-
   const [toggleIsShowPassword, setToggleIsShowPassword] = useState(false);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -53,8 +56,8 @@ const RegistrationScreen = ({ navigation }) => {
   }, []);
 
   const handleSubmit = () => {
-    console.log(credentials);
-    setCredentials(initialState);
+    dispatch(authSignUpUser(credentials));
+    setCredentials(initialCredentials);
   };
 
   return (
@@ -75,7 +78,7 @@ const RegistrationScreen = ({ navigation }) => {
               <AddAvatarIcon style={registrationScreenStyles.addAvatarIcon} />
             </TouchableOpacity>
           </View>
-          <Text style={registrationScreenStyles.title}>Sign In</Text>
+          <Text style={registrationScreenStyles.title}>Sign Up</Text>
 
           <View style={{ width: dimensionX - 16 * 2 }}>
             <TextInput
@@ -83,11 +86,11 @@ const RegistrationScreen = ({ navigation }) => {
               onChangeText={(value) =>
                 setCredentials((prevCredentials) => ({
                   ...prevCredentials,
-                  login: value,
+                  userName: value,
                 }))
               }
-              value={credentials.login}
-              placeholder="Login"
+              value={credentials.userName}
+              placeholder="Name"
             />
             <TextInput
               style={registrationScreenStyles.input}
@@ -131,14 +134,14 @@ const RegistrationScreen = ({ navigation }) => {
               width: dimensionX - 16 * 2,
             }}
           >
-            <Text style={registrationScreenStyles.signInText}>Sign In</Text>
+            <Text style={registrationScreenStyles.signInText}>Sign Up</Text>
           </TouchableOpacity>
           <TouchableOpacity
             title="Go to SignIn"
             onPress={() => navigation.navigate("LogIn")}
           >
             <Text style={registrationScreenStyles.logInText}>
-              Already have an account? log In
+              Already have an account? Sign In
             </Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>

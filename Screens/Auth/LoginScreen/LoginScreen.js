@@ -14,8 +14,10 @@ import {
 import loginScreenStyles from "./loginScreenStyles";
 
 import { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { authSignInUser } from "../../../redux/auth/authOperations";
 
-const initialState = {
+const initialCredentials = {
   email: "",
   password: "",
 };
@@ -23,11 +25,13 @@ const initialState = {
 const LoginScreen = ({ navigation }) => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
-  const [credentials, setCredentials] = useState(initialState);
+  const [credentials, setCredentials] = useState(initialCredentials);
 
   const [dimensionX, setDimensionX] = useState(Dimensions.get("window").width);
 
   const [toggleIsShowPassword, setToggleIsShowPassword] = useState(false);
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -49,10 +53,9 @@ const LoginScreen = ({ navigation }) => {
     };
   }, []);
 
-
   const handleSubmit = () => {
-    console.log(credentials);
-    setCredentials(initialState);
+    dispatch(authSignInUser(credentials));
+    // setCredentials(initialCredentials);
   };
 
   return (
@@ -68,7 +71,7 @@ const LoginScreen = ({ navigation }) => {
             maxHeight: keyboardVisible ? "67%" : "55%",
           }}
         >
-          <Text style={loginScreenStyles.title}>Log In</Text>
+          <Text style={loginScreenStyles.title}>Sign In</Text>
 
           <View style={{ width: dimensionX - 16 * 2 }}>
             <TextInput
@@ -119,7 +122,7 @@ const LoginScreen = ({ navigation }) => {
             title="Go to SignIn"
             onPress={() => navigation.navigate("SignIn")}
           >
-            <Text style={loginScreenStyles.logInText}>No account? Sign In</Text>
+            <Text style={loginScreenStyles.logInText}>No account? Sign Up</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
