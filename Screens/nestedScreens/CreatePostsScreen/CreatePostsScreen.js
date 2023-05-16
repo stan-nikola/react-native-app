@@ -8,6 +8,8 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { useSelector } from "react-redux";
 
 import GoBackIcon from "../../../assets/svg/arrow-left.svg";
 import MakePhoto from "../../../assets/svg/makePhoto.svg";
@@ -16,8 +18,9 @@ import DeleteIcon from "../../../assets/svg/trash.svg";
 import createPostScreenStyles from "./CreatePostsScreenStyles";
 import { useEffect, useState } from "react";
 import { Image } from "react-native";
-import { dbStorage } from "../../../firebase/config";
+
 import { uid } from "uid";
+import { firestoreDb } from "../../../firebase/config";
 
 export const CreatePostScreen = ({ navigation }) => {
   const [permission, requestPermission] = Camera.useCameraPermissions();
@@ -25,45 +28,62 @@ export const CreatePostScreen = ({ navigation }) => {
   const [cameraShown, setCameraShown] = useState(false);
   const [camera, setCamera] = useState(null);
   const [photo, setPhoto] = useState(null);
-  const [photoName, setPhotoName] = useState("");
+  const [photoName, setPhotoName] = useState(null);
   const [locationName, setLocationName] = useState("");
   const [processedPhoto, setProcessedPhoto] = useState(null);
   const [photoId, setPhotoId] = useState(uid());
 
+  const { userId, userName, userAvatar } = useSelector((state) => state.auth);
+
   const storage = getStorage();
   const storageRef = ref(storage, `postImages/${photoId}`);
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const { status } = await Location.requestForegroundPermissionsAsync();
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
 
-  //     if (status !== "granted") {
-  //       console.log("Permission to access location was denied");
-  //       return;
-  //     }
-  //   })();
-  //   (async () => {
-  //     if (permission.status !== "granted") {
-  //       console.log("Permission to access camera was denied");
-  //       return;
-  //     }
-  //   })();
-  // }, []);
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+    })();
+    // (async () => {
+    //   if (permission.status !== "granted") {
+    //     console.log("Permission to access camera was denied");
+    //     return;
+    //   }
+    // })();
+  }, []);
 
   const takePhoto = async () => {
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
     const photo = await camera.takePictureAsync();
     setCameraShown(!cameraShown);
     setPhoto(photo.uri);
   };
 
-  const handlePublish = () => {
-    navigation.navigate("Posts", { photo, photoName, locationName, location });
-    setPhoto(null);
-    setLocation(null);
-    setLocationName("");
-    setPhotoName("");
+  const handlePublish = async () => {
+    try {
+      const docRef = await addDoc(collection(firestoreDb, "posts"), {
+        userId,
+        userName,
+        image: processedPhoto,
+        location: location.coords,
+        photoName,
+        locationName,
+        userAvatar,
+      });
+
+      navigation.navigate("Home");
+
+      setPhoto(null);
+      setLocation(null);
+      setLocationName("");
+      setPhotoName("");
+      setProcessedPhoto(null);
+      console.log("Document written with ID: ", docRef.id);
+    } catch (e) {
+      console.error("Error adding document: ", e);
+    }
   };
 
   const handleDeletePost = () => {
@@ -76,6 +96,9 @@ export const CreatePostScreen = ({ navigation }) => {
   };
 
   const uploadPhotoToServer = async () => {
+    let location = await Location.getCurrentPositionAsync({});
+
+    setLocation(location);
     const response = await fetch(photo);
     const file = await response.blob();
 
@@ -157,19 +180,21 @@ export const CreatePostScreen = ({ navigation }) => {
             </View>
 
             {!processedPhoto ? (
-              <TouchableOpacity onPress={uploadPhotoToServer}>
-                <Text
-                  style={{
-                    fontFamily: "Roboto-Regular",
-                    fontSize: 16,
-                    lineHeight: 19,
-                    color: "#BDBDBD",
-                    marginTop: 8,
-                  }}
-                >
-                  Upload photo
-                </Text>
-              </TouchableOpacity>
+              photo && (
+                <TouchableOpacity onPress={uploadPhotoToServer}>
+                  <Text
+                    style={{
+                      fontFamily: "Roboto-Regular",
+                      fontSize: 16,
+                      lineHeight: 19,
+                      color: "#BDBDBD",
+                      marginTop: 8,
+                    }}
+                  >
+                    Upload photo
+                  </Text>
+                </TouchableOpacity>
+              )
             ) : (
               <TouchableOpacity onPress={changePhoto}>
                 <Text
@@ -206,28 +231,26 @@ export const CreatePostScreen = ({ navigation }) => {
                   onChangeText={(e) => setLocationName(e)}
                   value={locationName}
                 ></TextInput>
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("Map", {
-                      location,
-                      photoName,
-                      locationName,
-                    })
-                  }
+
+                <LocationIcon
                   style={{ position: "absolute", top: 25 }}
-                >
-                  <LocationIcon></LocationIcon>
-                </TouchableOpacity>
+                ></LocationIcon>
               </View>
 
-              <TouchableOpacity style={createPostScreenStyles.publishBtn}>
+              <TouchableOpacity
+                onPress={photoName && processedPhoto && handlePublish}
+                style={{
+                  ...createPostScreenStyles.publishBtn,
+                  backgroundColor:
+                    photoName && processedPhoto ? "#FF6C00" : "#F6F6F6",
+                }}
+              >
                 <Text
-                  onPress={handlePublish}
                   style={{
                     fontFamily: "Roboto-Regular",
                     fontSize: 16,
                     lineHeight: 19,
-                    color: "#BDBDBD",
+                    color: !processedPhoto ? "#BDBDBD" : "white",
                   }}
                 >
                   Publish

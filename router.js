@@ -53,6 +53,7 @@ export const MainRoute = ({ routeName }) => {
           name="Home"
           options={{
             headerShown: false,
+            unmountOnBlur: true,
             tabBarIcon: ({ focused, size, color }) => (
               <View
                 style={{
@@ -88,6 +89,7 @@ export const MainRoute = ({ routeName }) => {
           name="Profile"
           options={{
             headerShown: false,
+            unmountOnBlur: true,
             tabBarIcon: ({ focused, size, color }) => (
               <View
                 style={{

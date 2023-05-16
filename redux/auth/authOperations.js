@@ -14,28 +14,33 @@ const auth = getAuth(db);
 const { updateUserProfile, authSignOut, authStateChange } = authSlice.actions;
 
 export const authSignUpUser =
-  ({ email, password, userName }) =>
+  ({ email, password, userName, userAvatar }) =>
   async (dispatch, getState) => {
     await createUserWithEmailAndPassword(auth, email, password);
 
     await updateProfile(auth.currentUser, {
       displayName: userName,
-      // photoURL: "https://example.com/jane-q-user/profile.jpg",
+      photoURL: userAvatar,
     });
 
-    const { uid, displayName } = auth.currentUser;
+    const { uid, displayName, photoURL } = auth.currentUser;
+    console.log("auth.currentUser:", auth.currentUser);
 
     dispatch(
       updateUserProfile({
         userId: uid,
         userName: displayName,
+        email,
+        userAvatar: photoURL,
       })
     );
+    console.log("  getState();:", getState());
   };
 
 export const authSignInUser =
   ({ email, password }) =>
   async (dispatch, getState) => {
+    console.log(auth.currentUser);
     await signInWithEmailAndPassword(auth, email, password);
   };
 
@@ -51,6 +56,8 @@ export const authStateChangeUser = () => async (dispatch, getState) => {
         updateUserProfile({
           userId: user.uid,
           userName: user.displayName,
+          userEmail: user.email,
+          userAvatar: user.photoURL,
         })
       );
       dispatch(authStateChange({ stateChange: true }));

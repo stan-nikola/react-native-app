@@ -1,23 +1,39 @@
-import { StyleSheet } from "react-native";
+import { useEffect, useState } from "react";
+import { FlatList } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 
 import LogOutIcon from "../../../assets/svg/log-out.svg";
 import MessageIcon from "../../../assets/svg/message";
 import MapLocation from "../../../assets/svg/map-pin.svg";
-import { useEffect, useState } from "react";
-import { FlatList } from "react-native";
-import { useDispatch } from "react-redux";
 import { authSignOutUser } from "../../../redux/auth/authOperations";
+import { firestoreDb } from "../../../firebase/config";
 
-export const PostScreen = ({ navigation, route }) => {
+export const PostScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   const dispatch = useDispatch();
+  const { userName, userEmail, userAvatar } = useSelector(
+    (state) => state.auth
+  );
+
+  const getPosts = async () => {
+    const q = query(collection(firestoreDb, "posts"));
+    let posts = [];
+
+    onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        posts.push({ ...doc.data(), id: doc.id });
+      });
+    });
+
+    setPosts(posts);
+  };
 
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
-    }
-  }, [route.params]);
+    getPosts();
+  }, []);
 
   return (
     <View style={postScreenStyles.container}>
@@ -31,10 +47,7 @@ export const PostScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       <View style={postScreenStyles.userInfo}>
-        <Image
-          style={postScreenStyles.avatar}
-          source={require("../../../assets/temp/Avatar_cat.png")}
-        />
+        <Image style={postScreenStyles.avatar} source={{ uri: userAvatar }} />
 
         <View style={{ marginLeft: 8 }}>
           <Text
@@ -45,9 +58,9 @@ export const PostScreen = ({ navigation, route }) => {
               lineHeight: 15,
             }}
           >
-            User Name
+            {userName}
           </Text>
-          <Text style={{ fontSize: 11, lineHeight: 13 }}>email@mail.com</Text>
+          <Text style={{ fontSize: 11, lineHeight: 13 }}>{userEmail}</Text>
         </View>
       </View>
 
@@ -57,7 +70,7 @@ export const PostScreen = ({ navigation, route }) => {
         renderItem={({ item }) => (
           <View style={{ paddingHorizontal: 16, marginBottom: 34 }}>
             <Image
-              source={{ uri: item.photo }}
+              source={{ uri: item.image }}
               style={postScreenStyles.image}
             ></Image>
             <Text style={postScreenStyles.imageName}>{item.photoName}</Text>
@@ -68,7 +81,7 @@ export const PostScreen = ({ navigation, route }) => {
               }}
             >
               <TouchableOpacity
-                onPress={() => navigation.navigate("Comments", item.photo)}
+                onPress={() => navigation.navigate("Comments", item)}
                 style={{
                   flexDirection: "row",
                   justifyContent: "center",
@@ -140,8 +153,8 @@ const postScreenStyles = StyleSheet.create({
     height: 60,
   },
   avatar: {
-    maxWidth: 60,
-    maxHeight: 60,
+    width: 60,
+    height: 60,
     backgroundColor: "tomato",
     borderRadius: 16,
   },
@@ -171,3 +184,6 @@ const postScreenStyles = StyleSheet.create({
 });
 
 export default PostScreen;
+
+//  "uid": "xop82rHW13gTWxIrYGischM7qVz1"
+// "userId": "xop82rHW13gTWxIrYGischM7qVz1"

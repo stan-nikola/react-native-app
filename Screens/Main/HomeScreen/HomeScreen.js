@@ -3,6 +3,8 @@ import CommentsScreen from "../../nestedScreens/CommentsScreen/CommentsScreen";
 import { MapScreen } from "./../../nestedScreens/MapScreen/MapScreen";
 import { PostScreen } from "./../../nestedScreens/DefaultScreen/PostScreen";
 
+import { CreatePostScreen } from "./../../nestedScreens/CreatePostsScreen/CreatePostsScreen";
+
 const NestedScreen = createStackNavigator();
 
 export const HomeScreen = () => {
@@ -12,6 +14,11 @@ export const HomeScreen = () => {
         options={{ headerShown: false }}
         name="Posts"
         component={PostScreen}
+      />
+      <NestedScreen.Screen
+        options={{ headerShown: false }}
+        name="Create"
+        component={CreatePostScreen}
       />
       <NestedScreen.Screen
         options={{ headerShown: false }}

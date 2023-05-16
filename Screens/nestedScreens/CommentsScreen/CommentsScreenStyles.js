@@ -3,15 +3,16 @@ import { StyleSheet } from "react-native";
 const commentsScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
+    // alignItems: "center",
+    // justifyContent: "space-between",
     backgroundColor: "#fff",
   },
   header: {
-    flex: 1,
+    display: "flex",
+    flexDirection: "row",
     width: "100%",
     marginTop: 40,
-    maxHeight: 50,
+    height: 50,
     borderBottomWidth: 1,
     borderBottomColor: "#BDBDBD",
     alignItems: "center",
@@ -29,11 +30,13 @@ const commentsScreenStyles = StyleSheet.create({
     height: 24,
     width: 24,
   },
-  commentContainer: {
-    paddingHorizontal: 16,
-    marginTop: 32,
+  commentsContainer: {
+    // display: "flex",
     width: "100%",
+    height: "100%",
+    paddingHorizontal: 16,
   },
+
   postImage: {
     height: 250,
     borderRadius: 8,
@@ -41,7 +44,10 @@ const commentsScreenStyles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 8,
     width: "100%",
+    marginTop: 20,
   },
+  commentContainer: { width: "100%" },
+
   userComment: {
     display: "flex",
     flexDirection: "row",
@@ -59,7 +65,6 @@ const commentsScreenStyles = StyleSheet.create({
     width: 300,
     backgroundColor: "#00000008",
     borderRadius: 6,
-    borderTopLeftRadius: 0,
     padding: 16,
     marginBottom: 8,
   },
@@ -76,11 +81,15 @@ const commentsScreenStyles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 12,
     color: "#BDBDBD",
-    textAlign: "right",
   },
-  commentInputContainer: { alignItems: "center", width: "100%" },
+  commentInputContainer: {
+    alignItems: "center",
+    width: "100%",
+    height: 150,
+    marginTop: 10,
+  },
   commentInput: {
-    width: "90%",
+    width: "100%",
     height: 50,
     borderRadius: 100,
     backgroundColor: "#F6F6F6",

@@ -97,7 +97,7 @@ const createPostScreenStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     height: 50,
-    backgroundColor: "#F6F6F6",
+
     borderRadius: 100,
     marginTop: 32,
   },

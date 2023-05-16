@@ -1,4 +1,4 @@
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 
 import GoBackIcon from "../../../assets/svg/arrow-left.svg";
@@ -13,18 +13,18 @@ export const MapScreen = ({ navigation, route }) => {
     longitudeDelta: 0.006,
   });
 
-  const [locationTitle, setLocationTitle] = useState("");
   const [mapIsShown, setMapIsShown] = useState(false);
 
-  const params = route.params;
+  const { params } = route;
+
   useEffect(() => {
-    if (params.location) {
+    if (params) {
       setCoordinate({
         ...coordinate,
-        latitude: params.location.coords.latitude,
-        longitude: params.location.coords.longitude,
+        latitude: params.location.latitude,
+        longitude: params.location.longitude,
       });
-      setLocationTitle(params.photoName);
+
       setMapIsShown(true);
     }
   }, [params]);
@@ -44,7 +44,7 @@ export const MapScreen = ({ navigation, route }) => {
         {mapIsShown && (
           <MapView initialRegion={coordinate} style={mapScreenStyles.map}>
             <Marker
-              title={locationTitle}
+              title={params.locationName}
               coordinate={{
                 latitude: coordinate.latitude,
                 longitude: coordinate.longitude,
