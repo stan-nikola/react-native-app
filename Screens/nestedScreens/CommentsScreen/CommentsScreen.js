@@ -12,17 +12,37 @@ import CommentSend from "../../../assets/svg/commentSend.svg";
 import commentsScreenStyles from "./CommentsScreenStyles";
 import { dateConverter } from "../../../helpers/dateConverter";
 import { FlatList } from "react-native";
+import { Keyboard } from "react-native";
 
 export const CommentsScreen = ({ navigation, route }) => {
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [dbComments, setDbComments] = useState([]);
 
   const [userComment, setUserComment] = useState(null);
 
   const { id, image } = route.params;
 
-  const { userId, userName, userEmail, userAvatar } = useSelector(
-    (state) => state.auth
-  );
+  const { userId, userAvatar } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => {
+        setKeyboardVisible(true);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardVisible(false);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
 
   const getComments = async () => {
     const q = query(collection(firestoreDb, "posts", id, "comments"));
@@ -52,6 +72,7 @@ export const CommentsScreen = ({ navigation, route }) => {
 
     await addDoc(collection(postRef, "comments"), data);
     getComments();
+    setUserComment("");
   };
 
   return (

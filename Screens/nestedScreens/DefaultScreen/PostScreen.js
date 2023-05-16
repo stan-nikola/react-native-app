@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { collection, onSnapshot, query } from "firebase/firestore";
+import {
+  collection,
+  getCountFromServer,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import { StyleSheet } from "react-native";
 
@@ -10,6 +15,7 @@ import MessageIcon from "../../../assets/svg/message";
 import MapLocation from "../../../assets/svg/map-pin.svg";
 import { authSignOutUser } from "../../../redux/auth/authOperations";
 import { firestoreDb } from "../../../firebase/config";
+import { connectStorageEmulator } from "firebase/storage";
 
 export const PostScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
@@ -18,17 +24,26 @@ export const PostScreen = ({ navigation }) => {
     (state) => state.auth
   );
 
-  const getPosts = async () => {
+  const getPosts = () => {
     const q = query(collection(firestoreDb, "posts"));
-    let posts = [];
 
     onSnapshot(q, (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        posts.push({ ...doc.data(), id: doc.id });
+      querySnapshot.forEach(async (doc) => {
+        const commentCount = await getCommentCount(doc.id);
+
+        setPosts((prevPosts) => [
+          ...prevPosts,
+          { ...doc.data(), id: doc.id, commentCount },
+        ]);
       });
     });
+  };
 
-    setPosts(posts);
+  const getCommentCount = async (id) => {
+    const q = query(collection(firestoreDb, "posts", id, "comments"));
+    const snapshot = await getCountFromServer(q);
+
+    return snapshot.data().count.toString();
   };
 
   useEffect(() => {
@@ -89,7 +104,9 @@ export const PostScreen = ({ navigation }) => {
                 }}
               >
                 <MessageIcon style={{ marginRight: 8 }}></MessageIcon>
-                <Text style={postScreenStyles.imageLocation}>0</Text>
+                <Text style={postScreenStyles.imageLocation}>
+                  {item.commentCount}
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Map", item)}

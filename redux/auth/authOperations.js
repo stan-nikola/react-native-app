@@ -21,10 +21,10 @@ export const authSignUpUser =
     await updateProfile(auth.currentUser, {
       displayName: userName,
       photoURL: userAvatar,
+      email,
     });
 
     const { uid, displayName, photoURL } = auth.currentUser;
-    console.log("auth.currentUser:", auth.currentUser);
 
     dispatch(
       updateUserProfile({
@@ -34,13 +34,11 @@ export const authSignUpUser =
         userAvatar: photoURL,
       })
     );
-    console.log("  getState();:", getState());
   };
 
 export const authSignInUser =
   ({ email, password }) =>
   async (dispatch, getState) => {
-    console.log(auth.currentUser);
     await signInWithEmailAndPassword(auth, email, password);
   };
 

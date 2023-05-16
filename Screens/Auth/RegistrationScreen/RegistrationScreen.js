@@ -24,7 +24,7 @@ import registrationScreenStyles from "./registrationScreenStyles";
 import { authSignUpUser } from "../../../redux/auth/authOperations";
 import MakePhoto from "../../../assets/svg/makePhoto.svg";
 import { Image } from "react-native";
-import { firestoreDb } from "../../../firebase/config";
+
 import {
   deleteObject,
   getDownloadURL,
@@ -38,8 +38,7 @@ const initialCredentials = {
   userName: "",
   email: "",
   password: "",
-  userAvatar:
-    "https://t3.ftcdn.net/jpg/05/16/27/58/240_F_516275801_f3Fsp17x6HQK0xQgDQEELoTuERO4SsWV.jpg",
+  userAvatar: "",
 };
 
 const RegistrationScreen = ({ navigation }) => {
@@ -51,11 +50,11 @@ const RegistrationScreen = ({ navigation }) => {
   const [toggleIsShowPassword, setToggleIsShowPassword] = useState(false);
   const [camera, setCamera] = useState(null);
   const [cameraShown, setCameraShown] = useState(false);
-  const [photo, setPhoto] = useState(null);
+
   const [processedPhoto, setProcessedPhoto] = useState(null);
 
   const storage = getStorage();
-  const storageRef = ref(storage, `userAvatars/${photoId}`);
+  const storageRef = ref(storage, `postAvatars/${photoId}`);
 
   const dispatch = useDispatch();
 
@@ -81,25 +80,25 @@ const RegistrationScreen = ({ navigation }) => {
 
   const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
-    setCameraShown(!cameraShown);
-
-    setPhoto(photo.uri);
-
-    const response = await fetch(photo);
+    const response = await fetch(photo.uri);
     const file = await response.blob();
 
     await uploadBytes(storageRef, file);
     const result = await getDownloadURL(ref(storage, storageRef));
-
+    setCameraShown(!cameraShown);
     setProcessedPhoto(result);
+   
   };
+
+  useEffect(() => {
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      userAvatar: processedPhoto,
+    }));
+  }, [processedPhoto]);
 
   const handleSubmit = async () => {
     try {
-      setCredentials((prevCredentials) => ({
-        ...prevCredentials,
-        userAvatar: processedPhoto,
-      }));
       dispatch(authSignUpUser(credentials));
       setCredentials(initialCredentials);
     } catch (error) {
@@ -108,9 +107,7 @@ const RegistrationScreen = ({ navigation }) => {
   };
 
   const changePhoto = async () => {
-    setPhoto(null);
     setProcessedPhoto(null);
-    setCameraShown(!cameraShown);
 
     await deleteObject(storageRef);
     setPhotoId(uid());
@@ -141,7 +138,7 @@ const RegistrationScreen = ({ navigation }) => {
             maxHeight: keyboardVisible ? "80%" : "65%",
           }}
         >
-          {!photo ? (
+          {!processedPhoto ? (
             <TouchableOpacity
               onPress={() => setCameraShown(!cameraShown)}
               style={registrationScreenStyles.addAvatarButton}
@@ -164,7 +161,7 @@ const RegistrationScreen = ({ navigation }) => {
                 width: "100%",
                 height: "100%",
               }}
-              source={{ uri: photo }}
+              source={{ uri: processedPhoto }}
             />
           </View>
           <Text style={registrationScreenStyles.title}>Sign Up</Text>
