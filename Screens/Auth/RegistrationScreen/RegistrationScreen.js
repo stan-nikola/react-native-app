@@ -33,7 +33,6 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { uid } from "uid";
-import { Defs, LinearGradient, Stop, Svg } from "react-native-svg";
 
 const initialCredentials = {
   userName: "",
