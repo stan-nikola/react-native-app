@@ -9,6 +9,7 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   ImageBackground,
+  Image,
 } from "react-native";
 import { Camera } from "expo-camera";
 
@@ -23,7 +24,6 @@ import registrationScreenStyles from "./registrationScreenStyles";
 
 import { authSignUpUser } from "../../../redux/auth/authOperations";
 import MakePhoto from "../../../assets/svg/makePhoto.svg";
-import { Image } from "react-native";
 
 import {
   deleteObject,
@@ -33,6 +33,7 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { uid } from "uid";
+import { Defs, LinearGradient, Stop, Svg } from "react-native-svg";
 
 const initialCredentials = {
   userName: "",
@@ -57,6 +58,17 @@ const RegistrationScreen = ({ navigation }) => {
   const storageRef = ref(storage, `postAvatars/${photoId}`);
 
   const dispatch = useDispatch();
+  useEffect(() => {
+    if (cameraShown) {
+      (async () => {
+        let { status } = await Camera.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access camera was denied");
+          return;
+        }
+      })();
+    }
+  }, [cameraShown]);
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -82,33 +94,30 @@ const RegistrationScreen = ({ navigation }) => {
     const photo = await camera.takePictureAsync();
     const response = await fetch(photo.uri);
     const file = await response.blob();
-
+    setCameraShown(!cameraShown);
     await uploadBytes(storageRef, file);
     const result = await getDownloadURL(ref(storage, storageRef));
-    setCameraShown(!cameraShown);
+
     setProcessedPhoto(result);
-   
   };
 
   useEffect(() => {
     setCredentials((prevCredentials) => ({
       ...prevCredentials,
-      userAvatar: processedPhoto,
+      userAvatar:
+        processedPhoto ||
+        "https://st.depositphotos.com/1537427/3571/v/600/depositphotos_35717211-stock-illustration-vector-user-icon.jpg",
     }));
   }, [processedPhoto]);
 
   const handleSubmit = async () => {
-    try {
-      dispatch(authSignUpUser(credentials));
-      setCredentials(initialCredentials);
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(authSignUpUser(credentials));
+    setCredentials(initialCredentials);
   };
 
   const changePhoto = async () => {
     setProcessedPhoto(null);
-
+    setCameraShown(!cameraShown);
     await deleteObject(storageRef);
     setPhotoId(uid());
   };
@@ -120,7 +129,12 @@ const RegistrationScreen = ({ navigation }) => {
     >
       {cameraShown && (
         <View style={registrationScreenStyles.cameraContainer}>
-          <Camera style={registrationScreenStyles.camera} ref={setCamera}>
+          <Camera
+            style={registrationScreenStyles.camera}
+            type={"front"}
+            mirrorImage={false}
+            ref={setCamera}
+          >
             <TouchableOpacity
               onPress={takePhoto}
               style={registrationScreenStyles.cameraButton}
@@ -143,16 +157,20 @@ const RegistrationScreen = ({ navigation }) => {
               onPress={() => setCameraShown(!cameraShown)}
               style={registrationScreenStyles.addAvatarButton}
             >
-              <AddAvatarIcon style={registrationScreenStyles.addAvatarIcon} />
+              <View>
+                <AddAvatarIcon style={registrationScreenStyles.addAvatarIcon} />
+              </View>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               onPress={changePhoto}
               style={registrationScreenStyles.addAvatarButton}
             >
-              <DeleteAvatarIcon
-                style={registrationScreenStyles.deleteAvatarIcon}
-              />
+              <View>
+                <DeleteAvatarIcon
+                  style={registrationScreenStyles.deleteAvatarIcon}
+                />
+              </View>
             </TouchableOpacity>
           )}
           <View style={registrationScreenStyles.avatar}>

@@ -30,7 +30,7 @@ export const authSignUpUser =
       updateUserProfile({
         userId: uid,
         userName: displayName,
-        email,
+        userEmail: email,
         userAvatar: photoURL,
       })
     );

@@ -23,7 +23,6 @@ import { uid } from "uid";
 import { firestoreDb } from "../../../firebase/config";
 
 export const CreatePostScreen = ({ navigation }) => {
-  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [location, setLocation] = useState(null);
   const [cameraShown, setCameraShown] = useState(false);
   const [camera, setCamera] = useState(null);
@@ -47,13 +46,19 @@ export const CreatePostScreen = ({ navigation }) => {
         return;
       }
     })();
-    // (async () => {
-    //   if (permission.status !== "granted") {
-    //     console.log("Permission to access camera was denied");
-    //     return;
-    //   }
-    // })();
   }, []);
+
+  useEffect(() => {
+    if (cameraShown) {
+      (async () => {
+        let { status } = await Camera.requestCameraPermissionsAsync();
+        if (status !== "granted") {
+          console.log("Permission to access camera was denied");
+          return;
+        }
+      })();
+    }
+  }, [cameraShown]);
 
   const takePhoto = async () => {
     const photo = await camera.takePictureAsync();
